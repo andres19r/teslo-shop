@@ -40,13 +40,19 @@ export class ProductsService {
     }
   }
 
-  findAll(paginationDto: PaginationDto) {
+  async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
-    return this.productRepository.find({
+    const products = await this.productRepository.find({
       take: limit,
       skip: offset,
-      // TODO: relationships
+      relations: {
+        images: true,
+      },
     });
+    return products.map((product) => ({
+      ...product,
+      images: product.images.map((img) => img.url),
+    }));
   }
 
   async findOne(term: string) {
@@ -54,12 +60,13 @@ export class ProductsService {
     if (isUUID(term)) {
       product = await this.productRepository.findOneBy({ id: term });
     } else {
-      const queryBuilder = this.productRepository.createQueryBuilder();
+      const queryBuilder = this.productRepository.createQueryBuilder('prod');
       product = await queryBuilder
         .where('title ilike :title or slug = :slug', {
           title: term,
           slug: term,
         })
+        .leftJoinAndSelect('prod.images', 'prodImages')
         .getOne();
     }
 
@@ -101,5 +108,13 @@ export class ProductsService {
     throw new InternalServerErrorException(
       'Unexpected error - check server logs',
     );
+  }
+
+  async findOnePlain(term: string) {
+    const product = await this.findOne(term);
+    return {
+      ...product,
+      images: product.images.map((img) => img.url),
+    };
   }
 }
