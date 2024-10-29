@@ -12,6 +12,7 @@ import { DataSource, Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { validate as isUUID } from 'uuid';
 import { Product, ProductImage } from './entities';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class ProductsService {
@@ -23,6 +24,7 @@ export class ProductsService {
     @InjectRepository(ProductImage)
     private readonly productImageRepository: Repository<ProductImage>,
     private readonly dataSource: DataSource,
+    private readonly configService: ConfigService,
   ) {}
 
   async create(createProductDto: CreateProductDto) {
@@ -52,7 +54,10 @@ export class ProductsService {
     });
     return products.map((product) => ({
       ...product,
-      images: product.images.map((img) => img.url),
+      images: product.images.map(
+        (img) =>
+          `${this.configService.get('HOST_API')}/files/product/${img.url}`,
+      ),
     }));
   }
 
