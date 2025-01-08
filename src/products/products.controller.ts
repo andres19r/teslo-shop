@@ -42,7 +42,7 @@ export class ProductsController {
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateProductDto: UpdateProductDto,
-    @GetUser() user,
+    @GetUser() user: User,
   ) {
     return this.productsService.update(id, updateProductDto, user);
   }
