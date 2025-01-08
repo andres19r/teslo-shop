@@ -4,7 +4,6 @@ import { initialData } from './data/seed-data';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../auth/entities/user.entity';
 import { Repository } from 'typeorm';
-import { query } from 'express';
 
 @Injectable()
 export class SeedService {
