@@ -16,7 +16,7 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { Auth, GetUser } from 'src/auth/decorators';
 import { ValidRoles } from 'src/auth/interfaces';
 import { User } from 'src/auth/entities/user.entity';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Product } from './entities';
 
 @ApiTags('Products')
@@ -26,6 +26,7 @@ export class ProductsController {
 
   @Post()
   @Auth()
+  @ApiBearerAuth()
   @ApiResponse({
     status: 201,
     description: 'Product was created',
@@ -48,6 +49,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @Auth(ValidRoles.admin)
   update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -58,6 +60,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @Auth(ValidRoles.admin)
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.productsService.remove(id);

@@ -6,7 +6,7 @@ import { User } from './entities/user.entity';
 import { UserRoleGuard } from './guards/user-role/user-role.guard';
 import { ValidRoles } from './interfaces';
 import { Auth, GetUser, RawHeaders, RoleProtected } from './decorators';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -24,6 +24,7 @@ export class AuthController {
   }
 
   @Get('check-status')
+  @ApiBearerAuth()
   @Auth()
   checkAuthStatus(@GetUser() user: User) {
     return this.authService.checkAuthStatus(user);
